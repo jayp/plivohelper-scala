@@ -8,38 +8,46 @@ import org.slf4j.{ LoggerFactory, Logger }
  * prefix and support outputting to the various formats used in the system.
  *
  * @author liodden
- *
  */
 case class Phonenumber(countryCode: String, number: String) {
-  def countryName = PhonenumberParser.getCountryName(countryCode)
 
   /**
-   * Returns the number on the E.164 format (+PPNNNNNNNN), e.g. +4790055338.
-   *
-   * @return
+   * Name of the country to which the phone number belongs to
    */
-  def toStandardFormat = "+" + countryCode + number
+  def countryName =
+    PhonenumberParser.getCountryName(countryCode)
 
-  override def toString = toStandardFormat
+  /**
+   * The number on the E.164 format (+PPNNNNNNNN), e.g. +4790055338.
+   */
+  def toStandardFormat =
+    "+" + countryCode + number
 
+  override def toString =
+    toStandardFormat
 }
 
 object Phonenumber {
   def apply(number: String): Phonenumber = parse(number)
-  def apply(number: Option[String]): Option[Phonenumber] = number match {
-    case Some(num) => Some(parse(num))
-    case None      => None
-  }
-  def parse(string: String) = PhonenumberParser.parse(string)
 
-  implicit def string2Phonenumber(number: String): Phonenumber = Phonenumber.apply(number)
+  def apply(number: Option[String]): Option[Phonenumber] =
+    number match {
+      case Some(num) => Some(parse(num))
+      case None      => None
+    }
+
+  def parse(string: String) =
+    PhonenumberParser.parse(string)
+
+  implicit def string2Phonenumber(number: String): Phonenumber =
+    Phonenumber.apply(number)
 }
 
 /**
  * Companion for parsing phonenumbers.
  */
 object PhonenumberParser {
-  val DEFAULT_COUNTRY_CODE = "1"
+  val defaultCountryCode = "1"
   val log = LoggerFactory.getLogger(getClass)
 
   /**
@@ -53,13 +61,14 @@ object PhonenumberParser {
     if (number == null)
       throw new IllegalArgumentException("number cannot be null")
     if (!number.matches("[\\+]?[\\d]+"))
-      throw new IllegalArgumentException("number must contain digits and an optional international prefix only. (" + number + ")")
+      throw new IllegalArgumentException("number must contain digits and an " +
+        "optional international prefix only. (" + number + ")")
 
     val trimmed = number.replaceAll("\\s", "")
     if (trimmed.length() == 0)
       throw new IllegalArgumentException("trimmed number is empty")
 
-    parseAndDetermineCountryCodeIfPresent(trimmed)
+    makePhonenumber(trimmed)
   }
 
   /**
@@ -73,45 +82,45 @@ object PhonenumberParser {
     }
   }
 
-  private def parseAndDetermineCountryCodeIfPresent(number: String): Phonenumber = {
-    if (number.startsWith("+")) {
-      val numberWithoutPlus = number.substring(1)
-      return lookupCountryCode(numberWithoutPlus)
-    } else if (number.startsWith("00")) {
-      val numberWithoutZeroes = number.substring(2)
-      return lookupCountryCode(numberWithoutZeroes);
-    } else {
-      new Phonenumber(DEFAULT_COUNTRY_CODE, number);
-    }
+  /**
+   * Make a phonenumber object from a string number
+   */
+  private def makePhonenumber(number: String): Phonenumber =
+    if (number.startsWith("+"))
+      determineCountryCode(number.substring(1))
+    else if (number.startsWith("00"))
+      determineCountryCode(number.substring(2))
+    else
+      new Phonenumber(defaultCountryCode, number)
+
+  /**
+   * Break down the number into it's country code, and the country-specific
+   * number.
+   */
+  private def determineCountryCode(numberWithCC: String): Phonenumber = {
+      // A country code has 1-3 digits and, fortunately, the series are structured
+      // so that there is no overlap between phone number with a shorter country
+      // code and phone number with a longer country code.
+      def checkCCLen(ccLen: Int): Phonenumber = {
+        if (ccLen == 0) {
+          log.warn("Could not find country code for " + numberWithCC +
+            " in country code table! Returning default.")
+          new Phonenumber(defaultCountryCode, numberWithCC)
+        } else {
+          val candidate = numberWithCC.substring(0, ccLen)
+          if (countryCodes.contains(candidate))
+            new Phonenumber(candidate, numberWithCC.substring(candidate.length()))
+          else
+            checkCCLen(ccLen - 1)
+        }
+      }
+
+    checkCCLen(3)
   }
 
-  def lookupCountryCode(numberWithCC: String): Phonenumber = {
-    // A country code has 1-3 digits and, fortunately, the series are
-    // structured so that
-    // we can start checking for digit 1, then digit 1+2 and then digit
-    // 1+2+3.
-    var countryCode: String = null
-    var number: String = null
-
-    var code = numberWithCC.substring(0, 3)
-    if (countryCodes.contains(code))
-      countryCode = code
-    else if (countryCodes.contains(numberWithCC.substring(0, 2)))
-      countryCode = numberWithCC.substring(0, 2)
-    else if (countryCodes.contains(numberWithCC.substring(0, 1)))
-      countryCode = numberWithCC.substring(0, 1)
-
-    if (countryCode == null) {
-      log.warn("Could not find country code for " + numberWithCC
-        + " in country code table! Returning default.")
-      countryCode = DEFAULT_COUNTRY_CODE;
-      number = numberWithCC
-    } else
-      number = numberWithCC.substring(countryCode.length())
-
-    new Phonenumber(countryCode, number)
-  }
-
+  /**
+   * Known telephone prefix codes for countries
+   */
   private val countryCodes = Map(
     "355" -> "Albania",
     "213" -> "Algeria",
@@ -334,6 +343,9 @@ object PhonenumberParser {
     "260" -> "Zambia",
     "263" -> "Zimbabwe")
 
-  def getCountryName(countryCode: String): Option[String] = countryCodes.get(countryCode)
-
+  /**
+   * Determine the country name given a country code
+   */
+  def getCountryName(countryCode: String): Option[String] =
+    countryCodes.get(countryCode)
 }
