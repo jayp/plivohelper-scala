@@ -23,7 +23,7 @@ trait HttpConfig {
   val accountSid: String
   val authToken: String
   lazy val TWILIO_BASE = :/("api.twilio.com").secure as (accountSid, authToken)
-  lazy val API_BASE =  TWILIO_BASE / Twilio.API_VERSION / "Accounts" / accountSid
+  lazy val API_BASE = TWILIO_BASE / Twilio.API_VERSION / "Accounts" / accountSid
   val http = new Http
 }
 
@@ -33,7 +33,7 @@ trait HttpConfig {
 class RestClient(val accountSid: String, val authToken: String) extends HttpConfig with util.Logging {
   import scala.xml._
 
-  def execute[R](op: TwilioOperation[R]) : R  = {
+  def execute[R](op: TwilioOperation[R]): R = {
     val req = op.request(this)
     log.debug("Sending req {}", req)
     try {
@@ -42,7 +42,7 @@ class RestClient(val accountSid: String, val authToken: String) extends HttpConf
         op.parser.apply(res)
       })
     } catch {
-      case e : dispatch.StatusCode =>
+      case e: dispatch.StatusCode =>
         val res: Elem = XML.loadString(e.contents)
         if (!(res \ "RestException").isEmpty) {
           throw RestClient.parseException(res)
@@ -71,12 +71,11 @@ class TwilioClient(private val restClient: RestClient) {
            onConnect: Option[String],
            onEnd: Option[String] = None,
            timeout: Int = 30,
-           machineDetection: Boolean = false
-          ) : CallInfo = restClient.execute(DialOperation(from, to, onConnect, onEnd, timeout, machineDetection))
+           machineDetection: Boolean = false): CallInfo = restClient.execute(DialOperation(from, to, onConnect, onEnd, timeout, machineDetection))
 
   def sendSms(from: Phonenumber,
               to: Phonenumber,
-              body: String) : SmsInfo = restClient.execute(SendSms(from, to, body))
+              body: String): SmsInfo = restClient.execute(SendSms(from, to, body))
 
   /**
    * List all purchased incoming numbers.
@@ -93,7 +92,7 @@ class TwilioClient(private val restClient: RestClient) {
   def getConferenceState(cid: String) = {
     val (state, uris) = restClient.execute(GetConferenceParticipantURIs(cid))
 
-    val participants = uris.map ( uri => restClient.execute(GetConferenceParticipantInfo(uri)) )
+    val participants = uris.map(uri => restClient.execute(GetConferenceParticipantInfo(uri)))
     ConferenceState(cid, state, participants)
   }
 }

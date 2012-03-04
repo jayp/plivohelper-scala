@@ -1,7 +1,6 @@
 package scwilio
 package callback
 
-
 import org.specs.Specification
 
 class CallbackManagerSpec extends Specification {

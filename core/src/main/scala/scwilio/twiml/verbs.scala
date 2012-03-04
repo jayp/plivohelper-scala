@@ -16,7 +16,7 @@ object RejectResponse extends VoiceResponse(Reject.Rejected)
 sealed trait Verb
 
 object Verb {
-  implicit def singleVerb2VoiceResponse(v: Verb) : VoiceResponse = VoiceResponse(v)
+  implicit def singleVerb2VoiceResponse(v: Verb): VoiceResponse = VoiceResponse(v)
 }
 
 trait NestableVerb extends Verb
@@ -25,23 +25,21 @@ trait NestableVerb extends Verb
  * Dials a number. Can be used both as a op and a response.
  */
 case class Dial(
-   from: Phonenumber,
-   to: Phonenumber,
-   onEnd: Option[String] = None,
-   timeout: Int = 30
- ) extends Verb
+  from: Phonenumber,
+  to: Phonenumber,
+  onEnd: Option[String] = None,
+  timeout: Int = 30) extends Verb
 
 /**
  * Connects a call to a conference.
  */
 case class ConnectToConference(
-    cid: String,
-    onLeave: Option[String] = None,
-    onWait: Option[String] = None,
-    muted: Boolean = false,
-    startOnEnter: Boolean = true,
-    endOnExit: Boolean = false
-  ) extends Verb
+  cid: String,
+  onLeave: Option[String] = None,
+  onWait: Option[String] = None,
+  muted: Boolean = false,
+  startOnEnter: Boolean = true,
+  endOnExit: Boolean = false) extends Verb
 
 /**
  * Say something to the caller using TTS.
@@ -60,12 +58,11 @@ case class Redirect(to: String) extends Verb
 case object Hangup extends Verb
 
 case class Gather(
-    numDigits: Int = Integer.MAX_VALUE,
-    finishOnKey: Char = '#',
-    onGathered: Option[String] = None,
-    nestedVerbs: List[NestableVerb] = List(),
-    timeout: Int = 5
-  ) extends Verb
+  numDigits: Int = Integer.MAX_VALUE,
+  finishOnKey: Char = '#',
+  onGathered: Option[String] = None,
+  nestedVerbs: List[NestableVerb] = List(),
+  timeout: Int = 5) extends Verb
 
 abstract case class Reject(reason: String) extends Verb
 

@@ -1,6 +1,6 @@
 package demo
 
-import java.io.{File, IOException, FileInputStream}
+import java.io.{ File, IOException, FileInputStream }
 
 object DemoConfig {
   val props = new java.util.Properties

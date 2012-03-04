@@ -27,39 +27,37 @@ trait Call {
  *  Represents an active, ongoing call. In- or out-going.
  */
 case class ActiveCall(
-     sid: String,
-     from: Phonenumber,
-     to: Phonenumber,
-     status: ActiveCallStatus,
-     forwardedFrom: Option[Phonenumber],
-     answeredBy: Option[AnsweredBy],
-     digits: Option[String],
-     duration: Option[Int]
-   ) extends Call with CallbackEvent
+  sid: String,
+  from: Phonenumber,
+  to: Phonenumber,
+  status: ActiveCallStatus,
+  forwardedFrom: Option[Phonenumber],
+  answeredBy: Option[AnsweredBy],
+  digits: Option[String],
+  duration: Option[Int]) extends Call with CallbackEvent
 
 object ActiveCall {
   def parse(p: Map[String, String]) = {
-      ActiveCall(
-        p("CallSid"),
-        Phonenumber(p("From")),
-        Phonenumber(p("To")),
-        p.get("CallStatus") match {
-          case Some("in-progress") => InProgress
-          case Some("queued") => Queued
-          case Some("ringing") => Ringing
-          case Some(s) => Unknown(s)
-          case None => Unknown("no status")
-        },
-        Phonenumber(p.get("ForwardedFrom")),
-        p.get("AnsweredBy") match {
-          case Some("human") => Some(Human)
-          case Some("machine") => Some(Machine)
-          case Some(s) => Some(Unknown(s))
-          case None => None
-        },
-        p.get("Digits"),
-        p.get("DialCallDuration").map(_.toInt)
-      )
+    ActiveCall(
+      p("CallSid"),
+      Phonenumber(p("From")),
+      Phonenumber(p("To")),
+      p.get("CallStatus") match {
+        case Some("in-progress") => InProgress
+        case Some("queued")      => Queued
+        case Some("ringing")     => Ringing
+        case Some(s)             => Unknown(s)
+        case None                => Unknown("no status")
+      },
+      Phonenumber(p.get("ForwardedFrom")),
+      p.get("AnsweredBy") match {
+        case Some("human")   => Some(Human)
+        case Some("machine") => Some(Machine)
+        case Some(s)         => Some(Unknown(s))
+        case None            => None
+      },
+      p.get("Digits"),
+      p.get("DialCallDuration").map(_.toInt))
   }
 }
 
@@ -68,37 +66,35 @@ object ActiveCall {
  * originated via REST API.
  */
 case class CompletedCall(
-    sid: String,
-    from: Phonenumber,
-    to: Phonenumber,
-    status: CompletedCallStatus,
-    answeredBy: Option[AnsweredBy],
-    duration: Int
-  ) extends Call with CallbackEvent
+  sid: String,
+  from: Phonenumber,
+  to: Phonenumber,
+  status: CompletedCallStatus,
+  answeredBy: Option[AnsweredBy],
+  duration: Int) extends Call with CallbackEvent
 
 object CompletedCall {
   def parse(p: Map[String, String]) = {
-       CompletedCall(
-         p("CallSid"),
-         Phonenumber(p("From")),
-         Phonenumber(p("To")),
-         p.get("CallStatus") match {
-           case Some("completed") => Completed
-           case Some("busy") => Busy
-           case Some("no-answer") => NoAnswer
-           case Some("failed") => Failed
-           case Some(s) => Unknown(s)
-           case None => Unknown("no status")
-         },
-         p.get("AnsweredBy") match {
-           case Some("human") => Some(Human)
-           case Some("machine") => Some(Machine)
-           case Some(s) => Some(Unknown(s))
-           case None => None
-         },
-         p.get("CallDuration").getOrElse("0").toInt
-       )
-   }
+    CompletedCall(
+      p("CallSid"),
+      Phonenumber(p("From")),
+      Phonenumber(p("To")),
+      p.get("CallStatus") match {
+        case Some("completed") => Completed
+        case Some("busy")      => Busy
+        case Some("no-answer") => NoAnswer
+        case Some("failed")    => Failed
+        case Some(s)           => Unknown(s)
+        case None              => Unknown("no status")
+      },
+      p.get("AnsweredBy") match {
+        case Some("human")   => Some(Human)
+        case Some("machine") => Some(Machine)
+        case Some(s)         => Some(Unknown(s))
+        case None            => None
+      },
+      p.get("CallDuration").getOrElse("0").toInt)
+  }
 }
 
 /**
@@ -106,50 +102,48 @@ object CompletedCall {
  * existing active all, i.e., either an incoming call or an outgoing API call.
  */
 case class CompletedOutgoingDial(
-    sid: String,
-    from: Phonenumber,
-    to: Phonenumber,
-    status: CompletedCallStatus,
-    answeredBy: Option[AnsweredBy],
-    duration: Int,
-    dialedCallSid: String,
-    dialedCallStatus: CompletedCallStatus,
-    dialedCallDuration: Int
-  ) extends Call with CallbackEvent
+  sid: String,
+  from: Phonenumber,
+  to: Phonenumber,
+  status: CompletedCallStatus,
+  answeredBy: Option[AnsweredBy],
+  duration: Int,
+  dialedCallSid: String,
+  dialedCallStatus: CompletedCallStatus,
+  dialedCallDuration: Int) extends Call with CallbackEvent
 
 object CompletedOutgoingDial {
   def parse(p: Map[String, String]) = {
-       CompletedOutgoingDial(
-         p("CallSid"),
-         Phonenumber(p("From")),
-         Phonenumber(p("To")),
-         p.get("CallStatus") match {
-           case Some("completed") => Completed
-           case Some("busy") => Busy
-           case Some("no-answer") => NoAnswer
-           case Some("failed") => Failed
-           case Some(s) => Unknown(s)
-           case None => Unknown("no status")
-         },
-         p.get("AnsweredBy") match {
-           case Some("human") => Some(Human)
-           case Some("machine") => Some(Machine)
-           case Some(s) => Some(Unknown(s))
-           case None => None
-         },
-         p.get("CallDuration").getOrElse("0").toInt,
-         p("DialCallSid"),
-         p.get("DialCallStatus") match {
-           case Some("completed") => Completed
-           case Some("busy") => Busy
-           case Some("no-answer") => NoAnswer
-           case Some("failed") => Failed
-           case Some(s) => Unknown(s)
-           case None => Unknown("no status")
-         },
-         p.get("DialCallDuration").getOrElse("0").toInt
-       )
-   }
+    CompletedOutgoingDial(
+      p("CallSid"),
+      Phonenumber(p("From")),
+      Phonenumber(p("To")),
+      p.get("CallStatus") match {
+        case Some("completed") => Completed
+        case Some("busy")      => Busy
+        case Some("no-answer") => NoAnswer
+        case Some("failed")    => Failed
+        case Some(s)           => Unknown(s)
+        case None              => Unknown("no status")
+      },
+      p.get("AnsweredBy") match {
+        case Some("human")   => Some(Human)
+        case Some("machine") => Some(Machine)
+        case Some(s)         => Some(Unknown(s))
+        case None            => None
+      },
+      p.get("CallDuration").getOrElse("0").toInt,
+      p("DialCallSid"),
+      p.get("DialCallStatus") match {
+        case Some("completed") => Completed
+        case Some("busy")      => Busy
+        case Some("no-answer") => NoAnswer
+        case Some("failed")    => Failed
+        case Some(s)           => Unknown(s)
+        case None              => Unknown("no status")
+      },
+      p.get("DialCallDuration").getOrElse("0").toInt)
+  }
 }
 
 /**
@@ -181,7 +175,6 @@ case object Machine extends AnsweredBy
  */
 case class Unknown(msg: String) extends ActiveCallStatus with CompletedCallStatus with AnsweredBy
 
-
 /**
  * Event triggered when an incoming SMS is received.
  */
@@ -193,8 +186,7 @@ object IncomingSms {
       p("SmsSid"),
       Phonenumber(p("From")),
       Phonenumber(p("To")),
-      p("Body")
-    )
+      p("Body"))
   }
 }
 

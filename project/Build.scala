@@ -3,15 +3,14 @@ import Keys._
 
 object BuildSettings {
   val buildOrganization = "org.scwilio"
-  val buildVersion      = "0.1.1-SNAPSHOT"
+  val buildVersion = "0.1.1-SNAPSHOT"
   val buildScalaVersion = "2.9.1"
 
-  val buildSettings = Defaults.defaultSettings ++ Seq (
+  val buildSettings = Defaults.defaultSettings ++ Seq(
     crossScalaVersions := Seq("2.8.1", "2.9.0-1", "2.9.1"),
     organization := buildOrganization,
-    version      := buildVersion,
-    scalaVersion := buildScalaVersion
-  )
+    version := buildVersion,
+    scalaVersion := buildScalaVersion)
 }
 
 object ScwilioBuild extends Build {
@@ -22,6 +21,6 @@ object ScwilioBuild extends Build {
     Project(dir, file(dir), settings = buildSettings)
 
   lazy val core = scwilioProject("core")
-  lazy val unfiltered = scwilioProject("unfiltered") dependsOn(core)
-  lazy val examples = scwilioProject("examples") dependsOn(unfiltered)
+  lazy val unfiltered = scwilioProject("unfiltered") dependsOn (core)
+  lazy val examples = scwilioProject("examples") dependsOn (unfiltered)
 }

@@ -10,11 +10,11 @@ object IPTool {
     import scala.xml._
     val http = new Http
     val req = :/("ip-address.domaintools.com") / "myip.xml"
-    http(req <> { _ \\ "ip_address" text } )
+    http(req <> { _ \\ "ip_address" text })
   }
 }
 
 object AbsoluteUrl {
   lazy val publicIp = IPTool.publicIp
-  def apply(url: String) = Some("http://" + publicIp + ":" + DemoConfig.port  + url)
+  def apply(url: String) = Some("http://" + publicIp + ":" + DemoConfig.port + url)
 }

@@ -17,8 +17,7 @@ class CallbackEventsSpec extends Specification {
         "ForwardedFrom" -> "+14444",
         "AnsweredBy" -> "human",
         "Digits" -> "555",
-        "DialCallDuration" -> "1"
-      )
+        "DialCallDuration" -> "1")
 
       ActiveCall.parse(params) must_==
         ActiveCall(
@@ -28,19 +27,17 @@ class CallbackEventsSpec extends Specification {
           Some(Phonenumber("+14444")),
           Some(Human),
           Some("555"),
-          Some(1)
-        )
+          Some(1))
     }
   }
- "IncomingSms" should {
+  "IncomingSms" should {
     "parse correctly" in {
       val params = Map(
         "SmsSid" -> "sid",
         "AccountSid" -> "accsid",
         "From" -> "+4790055383",
         "To" -> "+15555",
-        "Body" -> "Hello world!"
-      )
+        "Body" -> "Hello world!")
 
       IncomingSms.parse(params) must_== IncomingSms("sid", Phonenumber("+4790055383"), Phonenumber("+15555"), "Hello world!")
     }

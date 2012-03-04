@@ -15,7 +15,6 @@ import functions._
  */
 class UnfilteredPhone(val absoluteUrlBase: String) extends Phone with InMemoryCallbackManager with Logging {
 
-
   def callBackPlan = CallbackPlan()
   /**
    * Unfiltered plan for handling callbacks
@@ -23,7 +22,7 @@ class UnfilteredPhone(val absoluteUrlBase: String) extends Phone with InMemoryCa
   object CallbackPlan {
     def apply() = unfiltered.filter.Planify(intent)
 
-    def intent : unfiltered.filter.Plan.Intent = {
+    def intent: unfiltered.filter.Plan.Intent = {
       case POST(Path(Seg("incoming" :: "voice" :: Nil)) & Params(p)) =>
         handleIncomingCall(ActiveCall.parse(p))
 
@@ -50,24 +49,23 @@ class UnfilteredPhone(val absoluteUrlBase: String) extends Phone with InMemoryCa
    */
   object URLMaker {
 
-    implicit def noParamCallFunc2UrlOpt(f: () => VoiceResponse) : Option[String] = {
-      def noParams(f: () => VoiceResponse)(x: ActiveCall) = f.apply
+    implicit def noParamCallFunc2UrlOpt(f: () => VoiceResponse): Option[String] = {
+        def noParams(f: () => VoiceResponse)(x: ActiveCall) = f.apply
       val callback = noParams(f) _
       makeUrl("/callback/no-param/" + register(callback))
     }
 
-    implicit def noParamCallFunc2Url(f: () => VoiceResponse) : String =
+    implicit def noParamCallFunc2Url(f: () => VoiceResponse): String =
       noParamCallFunc2UrlOpt(f).get
 
-    implicit def activeCallFunc2Url(f: ActiveCallFunc) : Option[String] =
+    implicit def activeCallFunc2Url(f: ActiveCallFunc): Option[String] =
       makeUrl("/callback/call-connected/" + register(f))
 
-    implicit def callOutcomeFunc2Url(f: CallOutcomeFunc) : Option[String] =
+    implicit def callOutcomeFunc2Url(f: CallOutcomeFunc): Option[String] =
       makeUrl("/callback/call-ended/" + register(f))
 
-    implicit def redirectedCallOutcomeFunc2Url(f: OutgoingDialOutcomeFunc) : Option[String] = 
+    implicit def redirectedCallOutcomeFunc2Url(f: OutgoingDialOutcomeFunc): Option[String] =
       makeUrl("/callback/outgoing-dial-ended/" + register(f))
   }
 }
-
 

@@ -12,11 +12,10 @@ case class IncomingNumber(sid: String, number: Phonenumber, config: IncomingNumb
  * non-specified options will remain unchanged.
  */
 case class IncomingNumberConfig(
-    friendlyName: Option[String] = None,
-    voiceUrl: Option[String] = None,
-    voiceFallbackUrl: Option[String] = None,
-    statusCallbackUrl: Option[String] = None,
-    smsUrl: Option[String] = None,
-    smsFallbackUrl: Option[String] = None
-  )
+  friendlyName: Option[String] = None,
+  voiceUrl: Option[String] = None,
+  voiceFallbackUrl: Option[String] = None,
+  statusCallbackUrl: Option[String] = None,
+  smsUrl: Option[String] = None,
+  smsFallbackUrl: Option[String] = None)
 
