@@ -4,11 +4,11 @@ Plivo Scala helper Library is a Scala API for the Plivo framework. It is
 heavily derived from Dag Liodden's [Scwilio
 library](https://github.com/daggerrz/Scwilio). It is currently under initial
 development, with only a small subset of the Plivo functionality supported. The
-API aims to deliver Plivo functionality in several layers of abstraction:
+API aims to deliver Plivo functionality using two layers of abstraction:
 
-1. Basic Plivo methods and RESTXML generation 2. Higher level "phone devices"
-where all HTTP and URL plumbing is abstracted away and replace with plain
-functions
+1. Basic Plivo methods and RESTXML generation
+2. Higher level "phone devices" where all HTTP and URL plumbing is abstracted
+away and replace with plain functions
 
 ## Basic Plivo methods and RESTXML generation
 
