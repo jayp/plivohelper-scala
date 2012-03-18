@@ -15,6 +15,7 @@ functions
 To invoke Plivo methods, get an `PlivoClient` instance:
 
     import org.plivo._
+
     val plivoClient = PlivoClient(new URL("http://127.0.0.1:8088/"),
       "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
 
@@ -24,6 +25,7 @@ Then invoke a method, e.g. for dialing a number:
                               to = "12125551234",
                               gateways = List("sofia/gateway/att/"),
                               answerUrl = new URL("http://example.com/answer.xml"))
+
     plivoClient.execute(call)
 
 To generate some RESTXML, put this in a handler of whatever web framework you
@@ -32,16 +34,19 @@ are using:
     import org.plivo.restxml._
 
     val response = Response(
-       Speak("Hi. This is an automated call.")
-       Speak("You will now hear some cow bells."),
+       Speak("Hi. This is an automated call."),
        Wait(2),
-       Speak("http://example.com/cowbell.mp3"))
+       Play(new URL("http://example.com/cowbell.mp3")))
+
     val stringResponse = ResponseXml(response).toString
 
 ## Phone devices
 
 Making stateful Plivo services can be a pain. Using `Phone` instances, the HTTP
 plumbing can can be removed completely. This allows for code like this:
+
+    import org.plivo._
+    import org.plivo.uf._
 
     val plivoClient = PlivoClient(new URL("http://127.0.0.1:8088/"),
       "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
@@ -59,10 +64,9 @@ plumbing can can be removed completely. This allows for code like this:
                              gateways = List("sofia/gateway/att/"),
                              answerUrl = (call: ActiveCall) => {
                                Response(
-                                 Speak("Hi. This is an automated call.")
-                                 Speah("You will now hear some cow bells."),
+                                 Speak("You will now hear some cow bells."),
                                  Wait(2),
-                                 Speak("http://example.com/cowbell.mp3"))
+                                 Play(new URL("http://example.com/cowbell.mp3")))
                              })
 
     plivoClient.execute(call)

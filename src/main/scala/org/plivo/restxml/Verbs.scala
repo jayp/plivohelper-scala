@@ -34,7 +34,7 @@ case class Speak(
 /**
  * Play an audio recording to the caller.
  */
-case class Play(audioUrl: String,
+case class Play(audioUrl: URL,
                 loop: Int = 1)
     extends NestableVerb
 
