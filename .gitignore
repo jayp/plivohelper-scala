@@ -1,14 +1,32 @@
-.idea
-*.iml
-.DS_Store
-lib_managed
-out
-project/boot
-project/build/target
-target
-.DS_Store
-scwilio.properties
+syntax: glob
+
+# Eclipse files
 .classpath
 .project
-.scala_dependencies
+.cache
 .target
+
+# Java binaries
+*.jar
+*.class
+*.war
+
+# H2 db files
+*.db
+
+# Mac OS X files
+.DS_store
+
+# miscallenous files
+.history
+
+# vim files
+*~
+*.swp
+*.vim
+
+syntax: regexp
+
+# sbt output files
+target/
+boot/
