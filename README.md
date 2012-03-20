@@ -59,8 +59,7 @@ plumbing can can be removed completely. This allows for code like this:
     val authToken = "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
     val plivoClient = PlivoClient(server, authId, authToken)
 
-
-    // active phone instance to receive Plivo callbacks
+    // activate phone instance to receive Plivo callbacks
     val port = 8181
     val phone = new UnfilteredPhone(port)
     phone.activate()
@@ -72,10 +71,9 @@ plumbing can can be removed completely. This allows for code like this:
                              to = "12125551234",
                              gateways = List("sofia/gateway/att/"),
                              answerUrl = (call: ActiveCall) => {
-                               // this anonymous function is converted to a
-                               // callback URL with the magic of Scala
-                               // implicts; freeing developers from low-level
-                               // HTTP plumbing
+                               // via the magic of Scala implicits, this
+                               // anonymous function is made in to a callback
+                               // URL; freeing developers from HTTP plumbing
                                Response(
                                  Speak("Hi. This is an automated call."),
                                  Wait(2),
