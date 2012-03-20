@@ -62,7 +62,7 @@ plumbing can can be removed completely. This allows for code like this:
 
     // active phone instance to receive Plivo callbacks
     val port = 8181
-    val phone = new UnfilteredPhone(port, new URL("http://localhost:8181/"))
+    val phone = new UnfilteredPhone(port)
     phone.activate()
 
     // implicitly convert Scala functions to callback URLs

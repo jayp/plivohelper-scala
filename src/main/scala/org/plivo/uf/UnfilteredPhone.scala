@@ -19,7 +19,7 @@ import unfiltered.response._
  */
 class UnfilteredPhone(
   val port: Int,
-  val absoluteBaseUrl: URL)
+  val absoluteBaseUrl: Option[URL] = None)
     extends Phone with InMemoryCallbackManager with Logging {
 
   def callBackPlan = CallbackPlan()
@@ -55,9 +55,14 @@ class UnfilteredPhone(
   }
 
   private def makeUrl(callbackId: String): Option[URL] = {
-    val baseUrl = absoluteBaseUrl.toString
-    val joiner = if (baseUrl.endsWith("/")) "" else "/"
-    Some(new URL(baseUrl + joiner + callbackId))
+    val baseUrlString = absoluteBaseUrl match {
+      case Some(url) => {
+        val urlString = url.toString
+        urlString + (if (urlString.endsWith("/")) "" else "/")
+      }
+      case None => "http://localhost:" + port + "/"
+    }
+    Some(new URL(baseUrlString + callbackId))
   }
 
   /**
