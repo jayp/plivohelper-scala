@@ -56,7 +56,9 @@ case class CompletedCall(
   scheduledHangupId: Option[String],
   aLegUuid: Option[String],
   aLegRequestUuid: Option[String],
-  hangupCause: String)
+  hangupCause: String,
+  duration: Option[Integer]) // duration is not sent by default. 
+    // must include "variable_duration" for EXTRA_FS_VARS in plivo.conf
     extends CallbackEvent
 
 object CompletedCall {
@@ -71,7 +73,8 @@ object CompletedCall {
       p.get("ScheduledHangupID"),
       p.get("ALegUUID"),
       p.get("ALegRequestUUID"),
-      p("HangupCause"))
+      p("HangupCause"),
+      p.get("variable_duration") map { _.toInt })
   }
 }
 
@@ -89,7 +92,9 @@ case class CompletedDial(
   dialRingStatus: Option[Boolean],
   dialHangupCause: Option[String],
   dialALegUuid: Option[String],
-  dialBLegUuid: Option[String])
+  dialBLegUuid: Option[String],
+  duration: Option[Integer]) // duration is not sent by default. 
+    // must include "variable_duration" for EXTRA_FS_VARS in plivo.conf)
     extends CallbackEvent
 
 object CompletedDial {
@@ -114,7 +119,8 @@ object CompletedDial {
       p.get("DialRingStatus") map { _.toBoolean },
       p.get("DialHangupCause"),
       p.get("DialALegUUID"),
-      p.get("DialBLegUUID"))
+      p.get("DialBLegUUID"),
+      p.get("variable_duration") map { _.toInt })
   }
 }
 
