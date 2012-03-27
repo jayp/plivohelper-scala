@@ -70,7 +70,7 @@ object RestXml {
         <Redirect method={ r.method.toString }>{ r.to.toString }</Redirect>
 
       case Wait(length) =>
-        <Waith length={ length.toString }/>
+        <Wait length={ length.toString }/>
     }
 
   private def optional[R](param: Option[R]): Option[xml.Text] =
