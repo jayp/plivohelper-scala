@@ -20,7 +20,8 @@ case class ActiveCall(
   direction: String,
   scheduledHangupId: Option[String],
   aLegUuid: Option[String],
-  aLegRequestUuid: Option[String])
+  aLegRequestUuid: Option[String],
+  digits: Option[String])
     extends CallbackEvent
 
 object ActiveCall {
@@ -40,7 +41,8 @@ object ActiveCall {
       p("Direction"),
       p.get("ScheduledHangupID"),
       p.get("ALegUUID"),
-      p.get("ALegRequestUUID"))
+      p.get("ALegRequestUUID"),
+      p.get("Digits"))
   }
 }
 
