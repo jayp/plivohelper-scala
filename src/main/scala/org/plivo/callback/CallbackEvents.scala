@@ -11,6 +11,7 @@ sealed trait CallbackEvent
  *  Represents an active, ongoing call. In- or out-going.
  */
 case class ActiveCall(
+  params: Map[String, String], // all incoming params
   callUuid: String,
   from: Phonenumber,
   to: Phonenumber,
@@ -27,6 +28,7 @@ case class ActiveCall(
 object ActiveCall {
   def parse(p: Map[String, String]) = {
     ActiveCall(
+      p,
       p("CallUUID"),
       Phonenumber(p("From")),
       Phonenumber(p("To")),
@@ -47,10 +49,11 @@ object ActiveCall {
 }
 
 case class CompletedCall(
+  params: Map[String, String], // all incoming params
   callUuid: String,
   from: Phonenumber,
   to: Phonenumber,
-  callerName: Option[String], // Plivo bug? ActiveCall vs. CompletedCall
+  callerName: Option[String],
   forwardedFrom: Option[Phonenumber],
   direction: String,
   scheduledHangupId: Option[String],
@@ -64,6 +67,7 @@ case class CompletedCall(
 object CompletedCall {
   def parse(p: Map[String, String]) = {
     CompletedCall(
+      p,
       p("CallUUID"),
       Phonenumber(p("From")),
       Phonenumber(p("To")),
@@ -79,10 +83,11 @@ object CompletedCall {
 }
 
 case class CompletedDial(
+  params: Map[String, String], // all incoming params
   callUuid: String,
   from: Phonenumber,
   to: Phonenumber,
-  callerName: Option[String], // Plivo bug? ActiveCall vs. CompletedCall
+  callerName: Option[String],
   forwardedFrom: Option[Phonenumber],
   direction: String,
   scheduledHangupId: Option[String],
@@ -92,14 +97,13 @@ case class CompletedDial(
   dialRingStatus: Option[Boolean],
   dialHangupCause: Option[String],
   dialALegUuid: Option[String],
-  dialBLegUuid: Option[String],
-  duration: Option[Integer]) // duration is not sent by default. 
-    // must include "variable_duration" for EXTRA_FS_VARS in plivo.conf)
+  dialBLegUuid: Option[String])
     extends CallbackEvent
 
 object CompletedDial {
   def parse(p: Map[String, String]) = {
     CompletedDial(
+      p,
       p("CallUUID"),
       Phonenumber(p("From")),
       Phonenumber(p("To")),
@@ -119,12 +123,12 @@ object CompletedDial {
       p.get("DialRingStatus") map { _.toBoolean },
       p.get("DialHangupCause"),
       p.get("DialALegUUID"),
-      p.get("DialBLegUUID"),
-      p.get("variable_duration") map { _.toInt })
+      p.get("DialBLegUUID"))
   }
 }
 
 case class DialCallback(
+  params: Map[String, String], // all incoming params
   callUuid: String,
   dialBLegStatus: DialStatus,
   dialALegUuid: String,
@@ -135,6 +139,7 @@ case class DialCallback(
 object DialCallback {
   def parse(p: Map[String, String]) = {
     DialCallback(
+      p,
       p("CallUUID"),
       p("DialBLegStatus") match {
         case "answer" => Answered
