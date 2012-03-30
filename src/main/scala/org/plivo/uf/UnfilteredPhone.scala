@@ -22,11 +22,18 @@ class UnfilteredPhone(
   val absoluteBaseUrl: Option[URL] = None)
     extends Phone with InMemoryCallbackManager with Logging {
 
-  def callBackPlan = CallbackPlan()
+  def callbackPlan = CallbackPlan()
+
+  val http = unfiltered.jetty.Http(port)
 
   def activate() {
-    unfiltered.jetty.Http(port).filter(callBackPlan).start
+    http.filter(callbackPlan).start()
   }
+
+  def shutdown() {
+    http.stop()
+  }
+
   /**
    * Unfiltered plan for handling callbacks
    */
